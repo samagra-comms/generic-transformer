@@ -75,7 +75,7 @@ export class SenderReceiverInfo {
 
 export class Transformer {
   id: string;
-  metaData: Map<String, String>;
+  metaData: Map<String, String>; //templateID, configID, userData
 }
 
 export class XMessagePayload {

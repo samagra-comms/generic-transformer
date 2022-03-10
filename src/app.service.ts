@@ -1,31 +1,25 @@
-import { Injectable, HttpService } from '@nestjs/common';
+import { HttpService, Injectable } from "@nestjs/common";
+
+import { XMessage } from "./types/xMessage";
+import { XMessagePayload } from "./types/misc";
 
 @Injectable()
 export class AppService {
   constructor(private httpService: HttpService) {}
 
-  sayHello() {
-    return {
-      node_env: process.env.NODE_ENV,
-      port: process.env.PORT,
-      message: 'Hello Docker from Nest!',
-      time: Date.now().toString(),
-    };
-  }
-
-  async fetchCountries(): Promise<any> {
+  async transform(xMessage: XMessage, userData: any): Promise<XMessage> {
     const url = process.env.COUNTRY_LIST_API_ENDPOINT;
-    const { data } = await this.httpService.get(url).toPromise();
+    // data for PDF
+    // Transformer Metadata {JSON} + UserData {JSON} [AES encryption]
+    const transformerMeta = xMessage.transformers[0].metaData;
+    const { data } = await this.httpService
+      .post(url, { transformerMeta, userData })
+      .toPromise();
 
+    // change xMessage
+    xMessage.payload = new XMessagePayload();
+    xMessage.payload.text = "URL of the PDF"; //data.something
     console.log(`There are ${data.length} countries in Africa!`);
-    return data;
-  }
-
-  async fetchSingleCountry(): Promise<any> {
-    const url = process.env.SINGLE_COUNTRY_API_ENDPOINT;
-    console.log('url: ', url);
-
-    const { data } = await this.httpService.get(url).toPromise();
-    return data;
+    return xMessage;
   }
 }

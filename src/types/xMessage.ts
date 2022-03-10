@@ -2,6 +2,7 @@ import {
   ConversationStage,
   MessageId,
   SenderReceiverInfo,
+  Transformer,
   XMessagePayload,
   XMessageThread,
 } from "./misc";
