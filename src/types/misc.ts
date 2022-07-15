@@ -26,11 +26,12 @@ export enum DeviceType {
 }
 
 export enum StylingTag {
-  LIST,
-  QUICKREPLYBTN,
-  IMAGE,
-  AUDIO,
-  VIDEO,
+  LIST = "LIST",
+  QUICKREPLYBTN = "QUICKREPLYBTN",
+  IMAGE = "IMAGE",
+  IMAGE_URL = "IMAGE_URL",
+  AUDIO = "AUDIO",
+  VIDEO = "VIDEO",
 }
 
 export class ConversationStage {

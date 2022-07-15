@@ -1,4 +1,4 @@
-import { Controller } from "@nestjs/common";
+import { Controller, Inject } from "@nestjs/common";
 import {
   Client,
   ClientKafka,
@@ -9,7 +9,15 @@ import { Kafka } from "kafkajs";
 import fetch from "node-fetch";
 import { AppService } from "./app.service";
 import { UCIKafkaClient } from "./client.kafka.provider";
-import { test1 } from "./testXML";
+import { test1, object } from "./testXML";
+import { XMessage } from "./types/xMessage";
+
+import { xml2js } from "xml-js";
+import { ConfigService } from "@nestjs/config";
+const { XMLParser, XMLBuilder } = require("fast-xml-parser");
+const options = {
+  ignoreAttributes: false,
+};
 
 interface IncomingMessage {
   topic: string;
@@ -25,43 +33,53 @@ interface IncomingMessage {
 
 @Controller("generic-transformer")
 export class AppController {
-  constructor(private readonly service: AppService) {}
+  constructor(
+    private readonly service: AppService,
+    private readonly configService: ConfigService,
+    @Inject("KafkaClient") private readonly client: UCIKafkaClient
+  ) {}
 
-  @Client({
-    transport: Transport.KAFKA,
-
-    options: {
-      subscribe: {
-        fromBeginning: true,
-      },
-      client: {
-        clientId: "uci-gt",
-        brokers: ["165.232.182.146:9094"],
-      },
-      consumer: {
-        groupId: "generic-transformer",
-      },
-    },
-  })
-  client: UCIKafkaClient;
+  parser = new XMLParser(options);
+  builder = new XMLBuilder(options);
 
   async onModuleInit() {
     this.client.subscribeToResponseOf("generic-transformer");
     await this.client.connect();
+
+    // Sample code to handle a message from the client
+    await this.client
+      .emit("generic-transformer", { value: JSON.stringify(test1) })
+      .subscribe();
+
     console.log(
       "consumer assignments: " +
         JSON.stringify(this.client.getConsumerAssignments())
     );
   }
 
+  // TODO: Refactor this to use subscription.
   @MessagePattern("generic-transformer")
   async handleEntityCreated(payload: IncomingMessage) {
-    console.log("got payload");
     const eventPayload = JSON.parse(payload.value);
-    const responsePayload = await this.service.transform(
-      eventPayload.xMessage,
-      eventPayload.userData
+    const xmlObject = this.parser.parse(eventPayload);
+    const parsedPayload: XMessage = xmlObject.xMessage as XMessage;
+    const responsePayloads: XMessage[] = await this.service.transform(
+      parsedPayload,
+      null
     );
-    await this.client.emit("process-outbound", payload.value).subscribe();
+
+    const responsePayloadXMLs: string[] = responsePayloads.map(
+      (responsePayload) =>
+        this.builder.build({
+          "?xml": xmlObject["?xml"],
+          xMessage: responsePayload,
+        })
+    );
+
+    for (const responsePayloadXML of responsePayloadXMLs) {
+      await this.client.emit("process-outbound", {
+        value: responsePayloadXML,
+      });
+    }
   }
 }

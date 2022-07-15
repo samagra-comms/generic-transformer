@@ -7,23 +7,29 @@ import {
   XMessageThread,
 } from "./misc";
 
+const options = {
+  ignoreAttributes: false,
+};
+const { XMLParser, XMLBuilder } = require("fast-xml-parser");
+const parser = new XMLParser(options);
+
 export enum MessageState {
-  NOT_SENT,
-  FAILED_TO_DELIVER,
-  DELIVERED,
-  READ,
-  REPLIED,
-  ENQUEUED,
-  SENT,
-  OPTED_IN,
-  OPTED_OUT,
+  NOT_SENT = "NOT_SENT",
+  FAILED_TO_DELIVER = "FAILED_TO_DELIVER",
+  DELIVERED = "DELIVERED",
+  READ = "READ",
+  REPLIED = "REPLIED",
+  ENQUEUED = "ENQUEUED",
+  SENT = "SENT",
+  OPTED_IN = "OPTED_IN",
+  OPTED_OUT = "OPTED_OUT",
 }
 
 export enum MessageType {
-  HSM,
-  TEXT,
-  HSM_WITH_BUTTON,
-  BROADCAST_TEXT,
+  HSM = "HSM",
+  TEXT = "TEXT",
+  HSM_WITH_BUTTON = "HSM_WITH_BUTTON",
+  BROADCAST_TEXT = "BROADCAST_TEXT",
 }
 
 export class XMessage {
@@ -51,7 +57,7 @@ export class XMessage {
 
   conversationLevel: Array<number>;
 
-  transformers: Array<Transformer>; // -1 no transfer like ms3 transforms msg to next msg
+  transformers: Transformer; // -1 no transfer like ms3 transforms msg to next msg
 
   thread: XMessageThread;
   payload: XMessagePayload;
@@ -60,9 +66,9 @@ export class XMessage {
     return "";
   }
 
-  public completeTransform() {
-    this.transformers.pop();
-  }
+  // public completeTransform() {
+  //   this.transformers.pop();
+  // }
 
   public getChannel(): string {
     return this.channelURI;

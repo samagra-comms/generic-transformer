@@ -8,48 +8,27 @@ import { ConfigService } from "@nestjs/config";
 let server: { close: (arg0: (err: any) => void) => void };
 
 async function bootstrap() {
+  console.log(process.env.KAFKA_HOST.length);
   const app = await NestFactory.createMicroservice<MicroserviceOptions>(
     AppModule,
     {
       transport: Transport.KAFKA,
       options: {
         client: {
-          brokers: ["165.232.182.146:9094"],
+          brokers: [process.env.KAFKA_HOST],
+          clientId: process.env.KAFKA_CLIENT_ID,
         },
         subscribe: {
           fromBeginning: true,
         },
         consumer: {
-          groupId: "generic-transformer",
+          groupId: process.env.KAFKA_GROUP_ID,
         },
       },
     }
   );
 
   app.listen(() => console.log("Kafka consumer service is listening!"));
-
-  // const app = await NestFactory.create(AppModule);
-  // const configService = app.get<ConfigService>(ConfigService);
-  // await app.listen(3002, "0.0.0.0");
-
-  // const microservice = app.connectMicroservice({
-  //   transport: Transport.KAFKA,
-  //   name: "SUNBIRD_TELEMETRY",
-  //   options: {
-  //     client: {
-  //       brokers: "165.232.182.146:9094",
-  //     },
-  //     consumer: {
-  //       groupId: "generic-transformer",
-  //     },
-  //   },
-  // });
-
-  // await app.startAllMicroservices();
-
-  // await app.listen(3002, "0.0.0.0");
-
-  // Handle process kill signals
   process.on("SIGINT", shutdown);
   process.on("SIGTERM", shutdown);
 }

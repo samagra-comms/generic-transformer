@@ -1,3 +1,10 @@
+import { XMessage } from "./types/xMessage";
+const options = {
+  ignoreAttributes: false,
+};
+const { XMLParser, XMLBuilder } = require("fast-xml-parser");
+const parser = new XMLParser(options);
+
 export const test1 = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <xMessage>
     <adapterId>44a9df72-3d7a-4ece-94c5-98cf26307324</adapterId>
@@ -71,3 +78,11 @@ export const test1 = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
         </metaData>
     </transformers>
 </xMessage>`;
+
+export const object: XMessage = parser.parse(test1);
+const builder = new XMLBuilder(options);
+export const xmlDataStr = builder.build(object);
+// export const object: XMessage = xml2js(test1, { compact: true }) as XMessage;
+// console.log(object);
+//     .elements[0] as XMessage;
+//   console.log(JSON.stringify(object));
