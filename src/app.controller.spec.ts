@@ -13,12 +13,6 @@ describe("AppController", () => {
     }).compile();
   });
 
-  describe("getHello", () => {
-    it('should return "Hello World!"', () => {
-      const appController = app.get<AppController>(AppController);
-      expect(appController.sayHello()).toBe("Hello World!");
-    });
-  });
   describe("simplePDF generation", () => {
     it("should return PDF URL on correct userData", () => {
       const appController = app.get<AppController>(AppController);
