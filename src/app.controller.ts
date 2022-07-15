@@ -79,7 +79,7 @@ export class AppController {
     for (const responsePayloadXML of responsePayloadXMLs) {
       console.log(responsePayloadXML);
       await this.client.emit(this.configService.get("KAFKA_REPLY_TOPIC"), {
-        value: responsePayloadXML,
+        value: JSON.stringify(responsePayloadXML),
       });
     }
   }
