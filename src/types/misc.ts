@@ -34,6 +34,15 @@ export enum StylingTag {
   VIDEO = "VIDEO",
 }
 
+export enum MediaCategory {
+  IMAGE_URL = "IMAGE_URL",
+  AUDIO_URL = "AUDIO_URL",
+  VIDEO_URL = "VIDEO_URL",
+  IMAGE = "IMAGE",
+  AUDIO = "AUDIO",
+  VIDEO = "VIDEO",
+}
+
 export class ConversationStage {
   stage: number;
   state: State;
@@ -51,7 +60,7 @@ export class MessageId {
 }
 
 export class MessageMedia {
-  category: string; //category list {image, audio, document, video}
+  category: MediaCategory; //category list {image, audio, document, video}
   text: string; //caption, if applicable
   url: string;
 }

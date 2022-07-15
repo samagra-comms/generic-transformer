@@ -47,9 +47,9 @@ export class AppController {
     await this.client.connect();
 
     // Sample code to handle a message from the client
-    await this.client
-      .emit("generic-transformer", { value: JSON.stringify(test1) })
-      .subscribe();
+    // await this.client
+    //   .emit("generic-transformer", { value: JSON.stringify(test1) })
+    //   .subscribe();
 
     console.log(
       "consumer assignments: " +
@@ -71,13 +71,14 @@ export class AppController {
     const responsePayloadXMLs: string[] = responsePayloads.map(
       (responsePayload) =>
         this.builder.build({
-          "?xml": xmlObject["?xml"],
+          "?xml": xmlObject["?xml"], // Copy the original XML header
           xMessage: responsePayload,
         })
     );
 
     for (const responsePayloadXML of responsePayloadXMLs) {
-      await this.client.emit("process-outbound", {
+      console.log(responsePayloadXML);
+      await this.client.emit(this.configService.get("KAFKA_REPLY_TOPIC"), {
         value: responsePayloadXML,
       });
     }
