@@ -1,6 +1,7 @@
 import { HttpService, Injectable } from "@nestjs/common";
 
 import { XMessage } from "./types/xMessage";
+import { DoubtnutService } from "./doubtnut.service";
 import {
   MediaCategory,
   MessageMedia,
@@ -10,7 +11,10 @@ import {
 
 @Injectable()
 export class AppService {
-  constructor(private httpService: HttpService) {}
+  constructor(
+    private httpService: HttpService,
+    private readonly doubtnutService: DoubtnutService,
+    ) {}
 
   async transform(xMessage: XMessage, userData: any): Promise<XMessage[]> {
     const xmessageClone = JSON.parse(JSON.stringify(xMessage));
@@ -24,6 +28,10 @@ export class AppService {
 
     //Transformers metadata can be used for additional context.
     const transformerMeta = xmessageClone.transformers.metaData;
+
+    const doubtnutResponse = isImage ? (await this.doubtnutService.ask("IMAGE", "image/png;base64,{{base64string}}")) : (await this.doubtnutService.ask("TEXT", "From a point 375 metres away from the foot of a tower, the top of the tower is observed at an angle of elevation of 45. Then the height of the tower in metres is"));
+
+    console.log(doubtnutResponse);
 
     // MediaMessage
     xmessageClone.payload = new XMessagePayload();
