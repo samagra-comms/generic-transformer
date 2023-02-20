@@ -7,7 +7,7 @@ export class DoubtnutService {
             url: process.env.askUrl,
             headers: { 
               'Content-Type': 'application/json',
-              'Message-Type': messageType,
+              'message-type': messageType,
             },
             data : JSON.stringify({
               message,
