@@ -21,15 +21,14 @@ export class AppService {
     const xmessageClone2 = JSON.parse(JSON.stringify(xMessage));
 
     // Getting image from xMessage
-    const isImage =
-      xmessageClone?.payload?.media?.category === MediaCategory.IMAGE;
-    const imageURL = xmessageClone?.payload?.media?.url;
-    console.log(imageURL);
+    const isImage = xmessageClone?.payload?.media?.category === MediaCategory.IMAGE;
+    const mediaURL = xmessageClone?.payload?.media?.url;
+    console.log(mediaURL);
 
     //Transformers metadata can be used for additional context.
     const transformerMeta = xmessageClone.transformers.metaData;
 
-    const doubtnutResponse = isImage ? (await this.doubtnutService.ask("IMAGE", "image/png;base64,{{base64string}}")) : (await this.doubtnutService.ask("TEXT", "From a point 375 metres away from the foot of a tower, the top of the tower is observed at an angle of elevation of 45. Then the height of the tower in metres is"));
+    const doubtnutResponse = isImage ? (await this.doubtnutService.ask(mediaURL, "IMAGE")) : (await this.doubtnutService.ask(xmessageClone?.payload?.text, "TEXT"));
 
     console.log(doubtnutResponse);
 
@@ -42,7 +41,7 @@ export class AppService {
       "https://fileinfo.com/img/ss/xl/png_79.png";
 
     // Text Message
-    xmessageClone2.payload.text = "Text Message 2"; //data.something
+    xmessageClone2.payload.text = doubtnutResponse; //data.something
 
     // If you need to send multiple messages - push them into an array here. Create a deepclonse.
     return [xmessageClone, xmessageClone2];
