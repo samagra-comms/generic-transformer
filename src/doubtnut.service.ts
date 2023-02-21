@@ -1,7 +1,7 @@
 import axios from "axios";
 
 export class DoubtnutService {
-    async ask(messageType: string, message: any) {
+    async ask(message: any, messageType: string) {
         const config = {
             method: 'post',
             url: process.env.askUrl,
@@ -14,6 +14,6 @@ export class DoubtnutService {
             }),
         };
         const res = await axios(config);
-        return res.data;
+        return res?.data?.data?.text;
     }
 }
